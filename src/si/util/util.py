@@ -33,3 +33,8 @@ def summary(dataset, format='df'):
     :type format: str, optional
     """
     pass
+    
+def l2_distance(x,y):
+    "distancia euclideana"
+    dist= ((x - y) ** 2).sum(axis=1)
+    return dist
