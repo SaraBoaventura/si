@@ -1,12 +1,17 @@
 import numpy as np
+from si.util.util import l2_distance
 
 class KMeans:
 
-    def __init__(self, k: iter, n_iter):
+    '''
+    separa os dados em clusters
+    '''
+
+    def __init__(self, k: iter, n_iter=2000):
         self.k = k
-        self.max_iter = n_iter
+        self.max_iter = n_iter # maximo de iteraçoes
         self.centroids = None
-        #self.distance = l2_distance
+        self.distance = l2_distance
 
     def fit(self, dataset):
         """randomly select k centroids"""
@@ -35,9 +40,9 @@ class KMeans:
         X = dataset.X
         changed = True
         count = 0
-        old_idxs= np.zeros(x.shape[0])
+        old_idxs= np.zeros(X.shape[0])
         while changed or count < self.max_iter:
-            idxs = np.apply_along_axis(self.get_closest_centroid(), axis=0, arr=X.T)
+            idxs = np.apply_along_axis(self.get_closest_centroid(X), axis=0, arr=X.T)
             cent = []
             for i in range(self.k):
                 cent.append(np.mean(X[idxs == i], axis = 0))
@@ -50,3 +55,4 @@ class KMeans:
 
     def fit_transform(self, dataset):
         self.fit(dataset)
+        return self.transform(dataset)

@@ -19,6 +19,9 @@ class StandardScaler:
         The variance of each feature in the training set.
     """
 
+    def __init__(self):
+        pass
+
     def fit(self, dataset):
         """
         Calculate and store the mean and variance of each feature in the
@@ -52,8 +55,8 @@ class StandardScaler:
             from ..data import Dataset
             return Dataset(Z,
                            copy(dataset.Y),
-                           copy(dataset._xnames),
-                           copy(dataset._yname))
+                           copy(dataset.xnames),
+                           copy(dataset.yname))
 
     def fit_transform(self, dataset, inline=False):
         """
@@ -91,5 +94,5 @@ class StandardScaler:
             from ..data import Dataset
             return Dataset(X,
                            copy(dataset.Y),
-                           copy(dataset._xnames),
-                           copy(dataset._yname))
+                           copy(dataset.xnames),
+                           copy(dataset.yname))

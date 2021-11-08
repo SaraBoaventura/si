@@ -13,8 +13,8 @@ class Dataset:
             raise Exception("Trying to instanciate a DataSet without any data")
         self.X = X
         self.Y = Y
-        self._xnames = xnames if xnames else label_gen(X.shape[1])
-        self._yname = yname if yname else 'Y'
+        self.xnames = xnames if xnames else label_gen(X.shape[1])
+        self.yname = yname if yname else 'Y'
 
     @classmethod
     def from_data(cls, filename, sep=",", labeled=True):
@@ -67,6 +67,7 @@ class Dataset:
 
     def hasLabel(self):
         """Returns True if the dataset constains labels (a dependent variable)"""
+        # verifar se tem um y ou não
         return self.Y is not None
 
     def getNumFeatures(self):
@@ -75,6 +76,7 @@ class Dataset:
 
     def getNumClasses(self):
         """Returns the number of label classes or 0 if the dataset has no dependent variable."""
+        # 
         return len(np.unique(self.Y)) if self.hasLabel() else 0
 
     def writeDataset(self, filename, sep=","):
@@ -93,10 +95,10 @@ class Dataset:
         import pandas as pd
         if self.Y is not None:
             fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
-            columns = self._xnames[:]+[self._yname]
+            columns = self.xnames[:]+[self.yname]
         else:
             fullds = self.X.copy()
-            columns = self._xnames[:]
+            columns = self.xnames[:]
         return pd.DataFrame(fullds, columns=columns)
 
     def getXy(self):
