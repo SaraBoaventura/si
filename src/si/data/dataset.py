@@ -90,10 +90,23 @@ class Dataset:
         fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
         np.savetxt(filename, fullds, delimiter=sep)
 
+    #def toDataframe(self):
+     #   """ Converts the dataset into a pandas DataFrame"""
+      #  import pandas as pd
+     #   if self.Y is not None:
+     #       fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
+     #       columns = self.xnames[:]+[self.yname]
+     #   else:
+      #      fullds = self.X.copy()
+      #      columns = self.xnames[:]
+        #  return pd.DataFrame(fullds, columns=columns)
+
     def toDataframe(self):
         """ Converts the dataset into a pandas DataFrame"""
         import pandas as pd
-        if self.Y is not None:
+        if self.hasLabel():
+            if type(self.X) is tuple: 
+                self.X = self.X[0]
             fullds = np.hstack((self.X, self.Y.reshape(len(self.Y), 1)))
             columns = self.xnames[:]+[self.yname]
         else:
@@ -103,3 +116,5 @@ class Dataset:
 
     def getXy(self):
         return self.X, self.Y
+
+

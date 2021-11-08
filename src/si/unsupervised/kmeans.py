@@ -4,7 +4,8 @@ from si.util.util import l2_distance
 class KMeans:
 
     '''
-    separa os dados em clusters
+    Agrupa os dados, dividindo as amostras por k grupos
+    minimizando as distancias entre pontos e centroides dos clusters
     '''
 
     def __init__(self, k: iter, n_iter=2000):
