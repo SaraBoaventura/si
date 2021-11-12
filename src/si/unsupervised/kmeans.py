@@ -21,7 +21,7 @@ class KMeans:
         self._max = np.max(x, axis=0)
 
     def init_centroids(self, dataset):
-        "iniciar os centroides"
+        "iniciar os centroides aleatoriamente"
         x = dataset.X
         self.centroids = np.array(
             [np.random.uniform(
@@ -35,7 +35,7 @@ class KMeans:
         return closest_centroids_index
 
     def transform(self,dataset):
-        """ """
+        """ Agrupa os dados em k grupos de acordo com os centroides iniciais"""
         self.init_centroids(dataset)
         print(self.centroids)
         X = dataset.X
