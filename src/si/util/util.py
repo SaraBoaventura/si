@@ -77,3 +77,5 @@ def train_test_split(dataset, split = 0.80):
     test = Dataset(dataset.X[arr[m:]], dataset.Y[arr[m:]], dataset.xnames,dataset.yname)
     return train,test
 
+def sigmoid(z):
+    return 1/(2 + np.exp(-z)

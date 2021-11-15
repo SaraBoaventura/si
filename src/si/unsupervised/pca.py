@@ -14,6 +14,10 @@ class PCA:
     Objetivo: reduzir o número de dimensões de um conjunto de dados,
     podendo ser usado para melhor visualização, análise ou para compressão
     dos dados
+
+    A matriz de covariância é uma matriz quadrada que contém as variâncias e covariâncias 
+    associadas a diversas variáveis. Os elementos diagonais da matriz contêm os desvios das 
+    variáveis, e os elementos fora da diagonal contêm as covariâncias entre todos os possíveis pares de variáveis.
     '''
 
     def __init__(self, ncomponents=2, using="svd"):
@@ -26,31 +30,29 @@ class PCA:
     
 
     def transform(self, dataset):
-        # calcula os scores 
-        scaled = StandardScaler().fit_transform(dataset).X.T   # scale the features
-        # or standardize the data
+        scaled = StandardScaler().fit_transform(dataset).X.T   #normaliza os dados utilizando o standardscaler
 
-        # using numpy.linalg.svd:
+        # numpy.linalg.svd:
         if self.type.lower()  == "svd": 
-            self.u, self.s, self.vh = np.linalg.svd(scaled)
+            self.u, self.s, self.vh = np.linalg.svd(scaled) # vetores e valores proprios
         else:
-            self.cov_matrix = np.cov(scaled)                  # covariance matrix
-            # s are eigenvalues, u are eigenvectors
+            self.cov_matrix = np.cov(scaled)                  #matriz de covariância dos dados normalizados
+            # s are eigenvalues (valores proprios), u are eigenvectors(vetores proprios)
             self.s, self.u = np.linalg.eig(self.cov_matrix)   # Compute the eigenvalues and eigenvectors
         
-        self.idx = np.argsort(self.s)[::-1]                   # sort the indexes (descending order)
-        self.eigen_val =  self.s[self.idx]                  # reorganize by index
-        self.eigen_vect = self.u[:, self.idx]                # reorganize eigen vectors by column index
+        self.idx = np.argsort(self.s)[::-1]   #ordenação dos idx (ordem decrescente) por importancia de componentes
+        self.eigen_val =  self.s[self.idx]    #reorganizaçao dos valores proprios pelos idx das colunas
+        self.eigen_vect = self.u[:, self.idx] #reorganizaçao dos vetores proprios pelos idx das colunas
 
-        self.sub_set_vect = self.eigen_vect[:, :self.ncomponents]  # ordered vectors
-        return scaled.T.dot(self.sub_set_vect)
+        self.sub_set_vect = self.eigen_vect[:, :self.ncomponents]  #vetores ordenados
+        return scaled.T.dot(self.sub_set_vect) # produto dos dois arrays
 
 
-    def variance_explained(self):
-        # find the explained variance   
-        # variabilidade 
+    def variance_explained(self):  
+        # variabilidade dos dados
         sum_ = np.sum(self.eigen_val)
-        percentage = [i / sum_ * 100 for i in self.eigen_val]
+        for i in self.eigen_val:
+            percentage = i / sum_ * 100 
         return np.array(percentage)
 
 

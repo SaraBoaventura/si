@@ -15,13 +15,14 @@ class KMeans:
         self.distance = l2_distance
 
     def fit(self, dataset):
-        """randomly select k centroids"""
+        """randomly select k centroids
+        Máximo e minino do dataset"""
         x = dataset.X
         self._min = np.min(x, axis=0)
         self._max = np.max(x, axis=0)
 
     def init_centroids(self, dataset):
-        "iniciar os centroides aleatoriamente"
+        "iniciar os centroides aleatoriamente de acordo com o min e o max e o valor de k"
         x = dataset.X
         self.centroids = np.array(
             [np.random.uniform(

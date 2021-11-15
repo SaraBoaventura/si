@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class Model(ABC):
 
-    def__init__(self):
+    def __init__(self):
         """
         Abstract class defining an interface for 
         supervised learning models
@@ -20,3 +20,4 @@ class Model(ABC):
     @abstractmethod
     def cost(self):
         raise NotImplementedError
+
