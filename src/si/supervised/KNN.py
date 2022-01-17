@@ -1,11 +1,12 @@
 from si.supervised.model import Model
 from si.util.util import l2_distance
 from si.util.metrics import accuracy_score
+import numpy as np
 
 class KNN(Model):
 
     def __init__(self,num_neighbors,classification = True):
-        #super(KNN, self).__init__(num_neighbors,classification = True)    # instanciar a flag para saber se foi feito o fit ao modelo ou não
+        super(KNN, self).__init__()    # instanciar a flag para saber se foi feito o fit ao modelo ou não
         self.num_neighbors = num_neighbors # K numero e vizinhos considerados no calculo do vizinho mais próximo
         self.classification = classification
 
@@ -15,6 +16,8 @@ class KNN(Model):
 
     def get_neighbors(self,x):
         distances = l2_distance(x,self.dataset.X) # atraves da distacia euclidiana de acordo com o numero de vizinhos 
+        #idxs = np.apply_along_axis(self.dataset.X, axis=0, arr=self.dataset.X)
+        #distances = l2_distance(x,idxs)
         sorted_index = np.argsort(distances) # ordenado as distancias, pois queremos adistancia mais proxima
         return sorted_index[:self.num_neighbors]
 
@@ -29,7 +32,7 @@ class KNN(Model):
         return prediction
 
     def cost(self):
-        y_pred = np.ma.apply_along_axis(self.predict, axis = 0, arr=self.datatset.X.T)
-        return accuracy_score(self.dataset.Y,y_pred)
+        y_pred = np.ma.apply_along_axis(self.predict, axis = 0, arr=self.dataset.X.T)
+        return accuracy_score(self.dataset.Y, y_pred)
 
 
