@@ -153,6 +153,12 @@ class NN(Model):
         y = y if y is not None else self.dataset.y
         output = self.predict(X)
         return self.loss(y,output)
+    
+    def useLoss(self, func, func2):
+        """Determines the loss functions to use."""
+        self.loss, self.loss_prime = func, func2
+
+    
 
 class Flatten(Layer):
     def forward(self,input):
@@ -216,31 +222,58 @@ class Conv2D(Layer):
 
         return input_error
 
-class MaxPoling(Layer):
-    def __init__(self, region_shape):
-        self.region_shape = region_shape
-        self.region_h, self.region_w = region_shape
+class Pooling2D(Layer):
+    def __init__(self, size=2, stride=1):
+        self.size = size
+        self.stride = stride
 
-    def forward(self,input_data):
-        self.X_input = input_data
-        _, self.input_h, self.input_w, self.input_f = input_data.shape
+    def pool(self, X_col):
+        raise NotImplementedError
 
-        self.out_h = self.input_h // self.region_h
-        self.out_w = self.input_w // self.region_w
-        output = np.zeros((self.out_h, self.out_w, self.input_f))
+    def dpool(self, dX_col,dout_col,pool_cache):
+        raise NotImplementedError
+    
+    def forward(self, input):
+        self.X_shape = input.shape
+        n, h, w, d = input.shape
+        
+    
+        h_out = (h-self.size)/self.stride + 1
+        w_out = (w-self.size)/self.stride + 1
 
-        for image, i, j in self.iterate_regions():
-            output[i, j] = np.amax(image)
-        return output
+        if not w_out.is_integer() or not h_out.is_integer():
+            raise Exception('Invalid output dimension')
+        
+        h_out,w_out = int(h_out), int(w_out)
+        X_reshaped = input.reshape(n*d,h,w,1)
+       
+        self.X_col, _ = im2col(X_reshaped, (self.size, self.size,1,1), pad=0, stride=self.stride) 
+      
+        out, self.max_idx = self.pool(self.X_col)
+        out = out.reshape(h_out,w_out,n,d)
+        out = out.transpose(2,0,1,3)
+        return out
 
-    def backward(self,output_error, lr):
-        pass
+    def backward(self, output_error, learning_rate):
+        n, w, h, d = self.X_shape
+        dX_col = np.zeros_like(self.X_col)
+        dout_col = output_error.transpose(1,2,3,0).ravel()
 
-    def iterate_regions(self):
-        for i in range(self.out_h):
-            for j in range(self.out_w):
-                image = self.X_input[(i * self.region_h): (i * self.region_h + 2), (j * self.region_h):(j * self.region_h + 2)]
-                yield image, i, j
+        dX = self.dpool(dX_col, dout_col, self.max_idx)
+        dX = col2im(dX, (n*d,h,w,1), (self.size, self.size,1,1), pad=0, stride=self.stride)
+        dX=dX.reshape(self.X_shape)
+        return dX       
 
+class MaxPooling2D(Pooling2D):
+    
+    def pool(self, X_col):
+        out = np.amax(X_col, axis = 0) 
+        max_idx = np.argmax(X_col, axis=0)
+        return out, max_idx
+
+    def dpool(self, dX_col, dout_col, pool_cache):
+        for x, indx in enumerate(pool_cache):
+            dX_col[indx, x] = 1
+        return dX_col * dout_col
 
 
